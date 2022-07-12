@@ -40,95 +40,40 @@
             background-repeat: no-repeat;
             image-rendering: pixelated;
         }
+
+		#credits {
+			position: relative;
+			top: -170px;
+			color: #000;
+			font: bold 30px Arial;
+			text-align: center;
+		}
 	</style>
 </head>
 <body>
-	<!--<canvas id="c01">No HTML5</canvas>
-	<script type="text/javascript">
-		var c = document.getElementById("c01");
-		var cx = c.getContext("2d");
-		c.width = 840;
-		c.height = 840;
-
-		var scn = 0;
-		var cnt = 0;
-		var fme = 0;
-		var img;
-		var mus;
-		var playMus = false;
-
-		c.addEventListener("click", PlayPause);
-
-		function Game() {
-			requestAnimationFrame(Game, c);
-
-			switch (scn) {
-				case 0:
-					cx.imageSmoothingEnabled = false;
-					img = new Image();
-					img.src = 'okinawa.png';
-					mus = new Audio('okinawa.mp3');
-					mus.loop = true;
-					scn++;
-					break;
-				case 1:
-					if (playMus) {
-						if (mus.paused) {
-							//mus.play();
-						}
-						if (cnt == 10) {
-							cnt = 0;
-							anim();
-						} else {
-							cnt++;
-						}
-					} else {
-						//mus.pause();
-						cx.clearRect(0, 0, c.width, c.height);
-						cx.save();
-						cx.font = "bold 120px Arial";
-						cx.fillText("Pig Food", 150, 300);
-						cx.restore();
-					}
-			}
-		} Game();
-
-		function anim() {
-			cx.clearRect(0, 0, c.width, c.height);
-			cx.save();
-			cx.drawImage(img, fme * 32, 0, 32, 32, 60, 60, 740, 740);
-			cx.restore();
-			if (fme==6) {
-				fme=0;
-			} else {
-				fme++;
-			}
-		}
-
-		function PlayPause() {
-			playMus = !playMus;
-		}
-	</script>-->
 	<script type="text/javascript">
 		var bPlaying = false;
 
 		function playStop() {
 			bPlaying = !bPlaying;
 			if (bPlaying) {
-                document.getElementById("title").style.display = "block";
-                document.getElementById("nissa").style.display = "none";
-				document.getElementById('music').pause();
-			} else {
                 document.getElementById("title").style.display = "none";
                 document.getElementById("nissa").style.display = "block";
 				document.getElementById('music').play();
+			} else {
+                document.getElementById("title").style.display = "block";
+                document.getElementById("nissa").style.display = "none";
+				document.getElementById('music').pause();
 			}
 		}
 	</script>
 	<div id="bg01" onclick="playStop()">
-		<div id="title">
+		<div id="title" style="display: block">
 		</div>
-		<div id="nissa" hidden>
+		<div id="nissa" style="display: none">
+		</div>
+		<div id="credits">
+			<p>Made by MauManX</p>
 		</div>
 	</div>
 	<div hidden>
