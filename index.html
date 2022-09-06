@@ -52,14 +52,9 @@
 		}
 	</style>
 </head>
-<body onload="load()">
+<body>
 	<script type="text/javascript">
 		var bPlaying = false;
-
-		function load() {
-			document.getElementById("file").src = "okinawa.mp3";
-			document.getElementById("music").load();
-		}
 
 		function playStop() {
 			bPlaying = !bPlaying;
@@ -74,11 +69,9 @@
 			}
 		}
 	</script>
-	<div style="opacity: 0">
-		<audio id="music" controls autoplay loop>
-			<source id="file" src="okinawa.mp3" type="audio/mpeg">
-		</audio>
-	</div>
+	<audio id="music" style="opacity: 0" controls autoplay loop>
+		<source id="file" src="okinawa.mp3" type="audio/mpeg">
+	</audio>
 	<div id="bg01" onclick="playStop()">
 		<div id="title" style="display: block"></div>
 		<div id="nissa" style="display: none"></div>
