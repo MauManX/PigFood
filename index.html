@@ -11,10 +11,10 @@
         }
 
         #music {
-            opacity: 0.5;
-            width: 100%;
+            opacity: 0;
             position: fixed;
             bottom: 0;
+			width: 100%;
         }
 
 		#bg01 {
@@ -55,7 +55,7 @@
 	</style>
 </head>
 <body>
-	<audio id="music" controls autoplay loop>
+	<audio id="music" controls loop>
 		<source src="okinawa.mp3" type="audio/mpeg">
 	</audio>
 	<div id="bg01" onclick="playStop()">
