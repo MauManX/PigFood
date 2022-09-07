@@ -53,29 +53,29 @@
 	</style>
 </head>
 <body>
-	<script type="text/javascript">
-		var bPlaying = false;
-
-		function playStop() {
-			bPlaying = !bPlaying;
-			if (bPlaying) {
-				document.getElementById("title").style.display = "none";
-				document.getElementById("nissa").style.display = "block";
-				document.getElementById('music').play();
-			} else {
-				document.getElementById("title").style.display = "block";
-				document.getElementById("nissa").style.display = "none";
-				document.getElementById('music').pause();
-			}
-		}
-	</script>
-	<audio id="music" style="opacity: 0" controls autoplay loop>
-		<source id="file" src="okinawa.mp3" type="audio/mpeg">
+	<audio id="music" style="opacity: 0.5" controls autoplay loop>
+		<source src="okinawa.mp3" type="audio/mpeg">
 	</audio>
 	<div id="bg01" onclick="playStop()">
 		<div id="title" style="display: block"></div>
 		<div id="nissa" style="display: none"></div>
 		<div id="credits"><p>Created by MauManX</p></div>
 	</div>
+	<script type="text/javascript">
+		var bPlaying = false;
+
+		function playStop() {
+			if (bPlaying) {
+                document.getElementById("title").style.display = "block";
+                document.getElementById("nissa").style.display = "none";
+                document.getElementById('music').pause();
+			} else {
+                document.getElementById("title").style.display = "none";
+                document.getElementById("nissa").style.display = "block";
+                document.getElementById('music').play();
+			}
+            bPlaying = !bPlaying;
+		}
+	</script>
 </body>
 </html>
