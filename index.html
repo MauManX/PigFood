@@ -1,32 +1,60 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PigFood - Aviso de Limpeza</title>
-    
-    <style>
+	<title>PigFood</title>
+	<link rel="manifest" href="manifest.json">
+	<link rel="icon" sizes="192x192" href="192.png">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<style>
         body {
             margin: 0;
-            padding: 0;
-            overflow: hidden; /* Evita barras de rolagem */
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f0f0;
+            background-color: goldenrod;
         }
 
-        /* 1. GIF de Fundo (Preenche a tela) */
-        #gif-background {
+        #music {
+            opacity: 0;
             position: fixed;
-            top: 0;
-            left: 0;
+            bottom: 0;
+			width: 100%;
+        }
+
+		#bg01 {
+			position: absolute;
+			top: 0;
+			width: 100%;
+			height: 700px;
+		}
+
+        #title {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Garante que o GIF cubra a tela sem distorção */
-            z-index: -1; /* Fica atrás de todo o conteúdo */
-            opacity: 0.8; /* Suaviza o GIF */
+            background-image: url(title.png);
+            background-position: center;
+            background-size: 360px 360px;
+            background-repeat: no-repeat;
+            image-rendering: pixelated;
         }
 
-        /* 2. O Aviso de Limpeza (Fixo na parte inferior ~80% vertical) */
+        #nissa {
+            width: 100%;
+            height: 100%;
+            background-image: url(okinawa.gif);
+            background-position: center;
+            background-size: 400px 400px;
+            background-repeat: no-repeat;
+            image-rendering: pixelated;
+        }
+
+		#credits {
+			position: relative;
+			top: -180px;
+			color: #000;
+			font: bold 30px Arial;
+			text-align: center;
+			text-shadow: 1px 1px 2px #fff;
+		}
+        
+        /* NOVO CSS: Aviso de Limpeza */
         #aviso-limpeza {
             position: fixed;
             /* Posiciona o topo do aviso a 80% da altura da tela (vh) */
@@ -34,64 +62,50 @@
             left: 0;
             width: 100%;
             text-align: center;
-            padding: 20px 0;
+            padding: 15px 0; /* Padding reduzido para caber melhor */
             
             /* Estilo do balão de aviso */
-            background-color: rgba(255, 255, 255, 0.95); /* Fundo branco semi-transparente */
-            border-top: 5px solid #ff69b4; /* Borda rosa (cor de porquinho) */
+            background-color: rgba(255, 255, 255, 0.9); /* Fundo branco semi-transparente */
+            border-top: 5px solid #ff69b4; 
             box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
             z-index: 10;
         }
 
-        #aviso-limpeza h2 {
+        #aviso-limpeza h3 {
             margin: 0;
             color: #333;
-            font-size: 2.5em;
-            text-shadow: 1px 1px 2px #ccc;
+            font-size: 1.5em; /* Reduzido de 2.5em para caber */
+            text-shadow: 1px 1px 1px #ccc;
         }
         
         #aviso-limpeza p {
-            margin-top: 5px;
+            margin-top: 3px;
             color: #666;
-            font-size: 1.2em;
+            font-size: 1em;
         }
-
-        /* 3. Botão de Início (Para iniciar a música) */
-        #start-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 15px 30px;
-            font-size: 1.5em;
-            cursor: pointer;
-            background-color: #ff69b4;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            z-index: 20;
-        }
-    </style>
+	</style>
 </head>
 <body>
-
-    <audio id="audio-player" loop>
-        <source src="sua_musica.mp3" type="audio/mp3">
-        Seu navegador não suporta o elemento de áudio.
-    </audio>
-
-    <img id="gif-background" src="seu_gif.gif" alt="GIF do Bicho de Estimação">
+	<audio id="music" controls loop>
+		<source src="okinawa.mp3" type="audio/mpeg">
+	</audio>
+	
+	<div id="bg01" onclick="playStop()">
+		<div id="title" style="display: block"></div>
+		<div id="nissa" style="display: none"></div>
+		<div id="credits"><p>Created by MauManX</p></div>
+	</div>
 
     <div id="aviso-limpeza">
-        <h2>Aguardando Carregamento...</h2>
+        <h3>Carregando Aviso...</h3>
         <p></p>
     </div>
 
-    <button id="start-button">Tocar Música e Iniciar App</button>
-
-
-    <script>
-        // O JSON com os dados dos bichos
+	<script type="text/javascript">
+		// VARIAVEIS GLOBAIS
+		var bPlaying = false;
+        
+        // JSON DOS ANIMAIS (Mantido dentro do script para fácil acesso)
         const ANIMAIS_DATA = [
             { "nome": "Nissa", "apelido": null, "adocao": "2018-06-30", "nascimento": null, "falecimento": "2025-04-30", "casinha": null },
             { "nome": "Vivien", "apelido": "Vivi", "adocao": "2018-08-30", "nascimento": null, "falecimento": "2019-09-19", "casinha": null },
@@ -104,44 +118,40 @@
             { "nome": "Rowan", "apelido": "Cocô", "adocao": null, "nascimento": "2021-12-29", "falecimento": null, "casinha": 2 }
         ];
 
-        // --- Funções Principais de Lógica ---
-
+        // --- FUNÇÕES DE LÓGICA DE LIMPEZA ---
+        
         /**
-         * Calcula o número do dia do ano (1 a 366).
-         * @returns {number} O dia do ano.
+         * Retorna o número do dia do ano (1 a 366).
          */
         function getDayOfYear() {
             const now = new Date();
-            const start = new Date(now.getFullYear(), 0, 0); // Primeiro dia do ano
-            const diff = now - start; // Diferença em milissegundos
-            const oneDay = 1000 * 60 * 60 * 24; // Milissegundos em um dia
-            
-            // Retorna a diferença em dias, arredondando para baixo e somando 1
+            const start = new Date(now.getFullYear(), 0, 0); 
+            const diff = now - start; 
+            const oneDay = 1000 * 60 * 60 * 24; 
             return Math.floor(diff / oneDay);
         }
 
         /**
-         * Determina o aviso de limpeza de hoje com base na paridade do dia do ano.
-         * @returns {{casinhas: string, bichos: string}} As informações para exibir.
+         * Determina o aviso de limpeza de hoje (Ciclo Par/Ímpar).
          */
         function getCleaningWarning() {
             const dayOfYear = getDayOfYear();
-            const isEven = dayOfYear % 2 === 0;
+            const isEven = dayOfYear % 2 === 0; // Se Par: Casinha 1. Se Ímpar: Casinhas 2 e 3.
 
             let casinhasToClean = "";
             let casinhasNumber = 0;
 
             if (isEven) {
-                // Dia PAR: Casinha 1 (Grupo A)
+                // Dia PAR: Casinha 1 (Grupo A: Xixi, Guigui)
                 casinhasToClean = "Casinha 1";
                 casinhasNumber = 1;
             } else {
-                // Dia ÍMPAR: Casinhas 2 e 3 (Grupo B)
+                // Dia ÍMPAR: Casinhas 2 e 3 (Grupo B: Jaja, Cocô, JJ)
                 casinhasToClean = "Casinhas 2 e 3";
                 casinhasNumber = [2, 3];
             }
 
-            // Filtra os bichos vivos que pertencem às casinhas selecionadas
+            // Filtra e lista os bichos nas casinhas de hoje
             const bichosToClean = ANIMAIS_DATA
                 .filter(animal => 
                     animal.falecimento === null && 
@@ -159,52 +169,38 @@
         /**
          * Atualiza o elemento de aviso na tela.
          */
-        function updateDisplay() {
+        function updateCleaningDisplay() {
             const warningElement = document.getElementById('aviso-limpeza');
-            const h2 = warningElement.querySelector('h2');
+            const h3 = warningElement.querySelector('h3');
             const p = warningElement.querySelector('p');
 
             const warning = getCleaningWarning();
 
-            h2.textContent = `🧹 É dia de limpar ${warning.casinhas}!`;
+            h3.textContent = `🧹 É dia de limpar ${warning.casinhas}!`;
             p.textContent = `Animais: ${warning.bichos}`;
         }
         
-        // --- Função de Inicialização (Inicia Música e Exibe Conteúdo) ---
+        // --- FUNÇÃO ORIGINAL (MODIFICADA LEVEMENTE) ---
 
-        function initApp() {
-            const audioPlayer = document.getElementById('audio-player');
-            const startButton = document.getElementById('start-button');
-            
-            // Tenta tocar a música (pode falhar sem interação do usuário)
-            audioPlayer.play().catch(error => {
-                console.log("Áudio bloqueado pelo navegador. É necessário um clique.");
-                // Se falhar, exibe o botão
-                startButton.style.display = 'block';
-            });
-            
-            updateDisplay();
-        }
-        
-        // --- Evento de Clique para iniciar Áudio (se necessário) ---
+		function playStop() {
+            // Se a música está tocando (bPlaying = true), para
+			if (bPlaying) {
+                document.getElementById("title").style.display = "block";
+                document.getElementById("nissa").style.display = "none";
+                document.getElementById('music').pause();
+			} else {
+                // Se a música está parada (bPlaying = false), toca
+                document.getElementById("title").style.display = "none";
+                document.getElementById("nissa").style.display = "block";
+                document.getElementById('music').play();
+			}
+            bPlaying = !bPlaying;
+		}
 
-        document.getElementById('start-button').addEventListener('click', () => {
-            const audioPlayer = document.getElementById('audio-player');
-            const startButton = document.getElementById('start-button');
-            
-            audioPlayer.play();
-            startButton.style.display = 'none'; // Esconde o botão após o play
-        });
+        // --- INICIALIZAÇÃO ---
 
-        // Inicia o aplicativo quando a página é carregada
-        document.addEventListener('DOMContentLoaded', () => {
-            // Esconde o botão por padrão; ele só será mostrado se o autoplay falhar
-            document.getElementById('start-button').style.display = 'none';
-            
-            // Configura a lógica de aviso e tenta iniciar a música
-            initApp();
-        });
-        
-    </script>
+        // Executa quando todo o conteúdo da página é carregado
+        document.addEventListener('DOMContentLoaded', updateCleaningDisplay);
+	</script>
 </body>
 </html>
