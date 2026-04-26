@@ -54,6 +54,205 @@
 			text-shadow: 1px 1px 2px #fff;
 		}
         
+        /* NOVO CSS: Aviso de Aniversário */
+        #aviso-aniversario {
+            position: fixed;
+            top: 72vh; /* Fica logo acima do aviso de limpeza */
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 11;
+            display: none; /* Só aparece se houver niver */
+            pointer-events: none;
+        }
+
+        .tag-niver {
+            display: inline-block;
+            background-color: #ffd700;
+            color: #333;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border: 2px solid #ffa500;
+        }
+
+        /* SEU CSS: Aviso de Limpeza */
+        #aviso-limpeza {
+            position: fixed;
+            top: 80vh; 
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding: 15px 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-top: 5px solid #ff69b4; 
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        #aviso-limpeza h3 {
+            margin: 0;
+            color: #333;
+            font-size: 1.5em;
+            text-shadow: 1px 1px 1px #ccc;
+        }
+        
+        #aviso-limpeza p {
+            margin-top: 3px;
+            color: #666;
+            font-size: 1em;
+        }
+	</style>
+</head>
+<body>
+	<audio id="music" controls loop>
+		<source src="okinawa.mp3" type="audio/mpeg">
+	</audio>
+	
+	<div id="bg01" onclick="playStop()">
+		<div id="title" style="display: block"></div>
+		<div id="nissa" style="display: none"></div>
+		<div id="credits"><p>Created by MauManX</p></div>
+	</div>
+
+    <div id="aviso-aniversario"></div>
+
+    <div id="aviso-limpeza">
+        <h3>Carregando Aviso...</h3>
+        <p></p>
+    </div>
+
+	<script type="text/javascript">
+		var bPlaying = false;
+        
+        const ANIMAIS_DATA = [
+            { "nome": "Nissa", "apelido": null, "adocao": "2018-06-30", "nascimento": null, "falecimento": "2025-04-30", "casinha": null },
+            { "nome": "Vivien", "apelido": "Vivi", "adocao": "2018-08-30", "nascimento": null, "falecimento": "2019-09-19", "casinha": null },
+            { "nome": "Liliana", "apelido": "Lili", "adocao": "2019-09-21", "nascimento": null, "falecimento": "2025-08-14", "casinha": null },
+            { "nome": "Chandra", "apelido": "Chanchan", "adocao": "2019-09-22", "nascimento": null, "falecimento": "2022-06-28", "casinha": null },
+            { "nome": "Jace", "apelido": "JJ", "adocao": "2020-11-28", "nascimento": "2020-09-04", "falecimento": null, "casinha": 3 },
+            { "nome": "Gideon", "apelido": "Guigui", "adocao": "2021-10-23", "nascimento": "2021-08-23", "falecimento": null, "casinha": 1 },
+            { "nome": "Jaya", "apelido": "Jaja", "adocao": "2021-10-23", "nascimento": "2021-06-23", "falecimento": null, "casinha": 2 },
+            { "nome": "Will", "apelido": "Xixi", "adocao": null, "nascimento": "2021-12-29", "falecimento": null, "casinha": 1 },
+            { "nome": "Rowan", "apelido": "Cocô", "adocao": null, "nascimento": "2021-12-29", "falecimento": null, "casinha": 2 }
+        ];
+
+        function getDayOfYear() {
+            const now = new Date();
+            const start = new Date("2026-01-01"); 
+            const diff = now - start; 
+            const oneDay = 1000 * 60 * 60 * 24; 
+            return Math.floor(diff / oneDay);
+        }
+
+        function getCleaningWarning() {
+            const dayOfYear = getDayOfYear();
+            const isEven = dayOfYear % 2 === 0;
+
+            let casinhasToClean = "";
+            let casinhasNumber = 0;
+
+            if (isEven) {
+                casinhasToClean = "Casinha 1";
+                casinhasNumber = 1;
+            } else {
+                casinhasToClean = "Casinhas 2 e 3";
+                casinhasNumber = [2, 3];
+            }
+
+            const bichosToClean = ANIMAIS_DATA
+                .filter(animal => 
+                    animal.falecimento === null && 
+                    (Array.isArray(casinhasNumber) ? casinhasNumber.includes(animal.casinha) : animal.casinha === casinhasNumber)
+                )
+                .map(animal => animal.nome + (animal.apelido ? ` (${animal.apelido})` : ''))
+                .join(', ');
+
+            return {
+                casinhas: casinhasToClean,
+                bichos: bichosToClean
+            };
+        }
+
+        // --- NOVA LÓGICA: ANIVERSÁRIOS ---
+
+        function checkAnniversaries() {
+            const now = new Date();
+            const hoje = (now.getMonth() + 1).toString().padStart(2, '0') + "-" + now.getDate().toString().padStart(2, '0');
+            const listaNivers = [];
+
+            ANIMAIS_DATA.forEach(pet => {
+                if (pet.falecimento === null) {
+                    if (pet.nascimento && pet.nascimento.endsWith(hoje)) {
+                        listaNivers.push(`🎂 Niver de ${pet.nome}!`);
+                    }
+                    if (pet.adocao && pet.adocao.endsWith(hoje)) {
+                        listaNivers.push(`🏠 Adoção de ${pet.nome}!`);
+                    }
+                }
+            });
+
+            const div = document.getElementById('aviso-aniversario');
+            if (listaNivers.length > 0) {
+                div.innerHTML = `<div class="tag-niver">${listaNivers.join(' | ')}</div>`;
+                div.style.display = 'block';
+            }
+        }
+
+        function updateDisplay() {
+            const warningElement = document.getElementById('aviso-limpeza');
+            const h3 = warningElement.querySelector('h3');
+            const p = warningElement.querySelector('p');
+
+            const warning = getCleaningWarning();
+
+            h3.textContent = `🧹 É dia de limpar ${warning.casinhas}!`;
+            p.textContent = `Animais: ${warning.bichos}`;
+            
+            checkAnniversaries(); // Roda junto com a limpeza
+        }
+        
+        // --- SUA FUNÇÃO PLAYSTOP (MANTIDA INTACTA) ---
+
+		function playStop() {
+			if (bPlaying) {
+                document.getElementById("title").style.display = "block";
+                document.getElementById("nissa").style.display = "none";
+                document.getElementById('music').pause();
+			} else {
+                document.getElementById("title").style.display = "none";
+                document.getElementById("nissa").style.display = "block";
+                document.getElementById('music').play();
+			}
+            bPlaying = !bPlaying;
+		}
+
+        document.addEventListener('DOMContentLoaded', updateDisplay);
+	</script>
+</body>
+</html>
+
+        #nissa {
+            width: 100%;
+            height: 100%;
+            background-image: url(okinawa.gif);
+            background-position: center;
+            background-size: 400px 400px;
+            background-repeat: no-repeat;
+            image-rendering: pixelated;
+        }
+
+		#credits {
+			position: relative;
+			top: -180px;
+			color: #000;
+			font: bold 30px Arial;
+			text-align: center;
+			text-shadow: 1px 1px 2px #fff;
+		}
+        
         /* NOVO CSS: Aviso de Limpeza */
         #aviso-limpeza {
             position: fixed;
